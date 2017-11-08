@@ -6,7 +6,7 @@ import implementation.T_tpn_conf
 import groovy.sql.Sql
 import groovy.text.SimpleTemplateEngine
 import groovy.text.Template
-import main.T_middleware_base_5_app_context
+import base.T_middleware_base_5_app_context
 
 class T_tpn_base_5_context extends T_tpn_base_4_const {
 

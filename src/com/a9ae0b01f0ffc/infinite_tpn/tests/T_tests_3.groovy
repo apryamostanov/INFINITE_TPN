@@ -1,4 +1,5 @@
 import Interfaces.I_http_message
+import base.T_middleware_base_6_util
 import implementation.T_soap2rest_automated_converter
 import implementation.T_tpn_http_message
 import org.junit.Test
@@ -165,7 +166,6 @@ class T_tests_3 {
     void test_01() {
 
         T_middleware_base_6_util.init_app_context("C:\\middleware\\conf\\commons.conf")
-        T_logging_base_5_context.init_custom(com.a9ae0b01f0ffc.middleware.main.T_middleware_base_5_app_context.app_conf().GC_BLACK_BOX_CONFIG, GC_FALSE, com.a9ae0b01f0ffc.middleware.main.T_middleware_base_5_app_context.app_conf().GC_DYNAMIC_TOKEN_CODE_CLOSURE)
         I_http_message l_rest_message = new T_tpn_http_message()
         I_http_message l_soap_message = new T_tpn_http_message()
         l_soap_message.set_service_name("TPN")
@@ -173,8 +173,8 @@ class T_tests_3 {
         l_soap_message.set_payload(z)
         HashMap<String, I_http_message> q = new HashMap<String, I_http_message>()
         q.put("TPN", l_soap_message)
-        l_rest_message = new T_soap2rest_automated_converter().convert_http_messages(q, "TPN")
-        System.out.println(l_rest_message.get_payload())
+        //l_rest_message = new T_soap2rest_automated_converter().convert_http_messages(q, "TPN")
+        //System.out.println(l_rest_message.get_payload())
     }
 
 

@@ -4,15 +4,15 @@ import Interfaces.I_http_message
 import annotations.I_black_box
 import annotations.I_fix_variable_scopes
 import groovy.time.TimeCategory
-import implementation.T_http_sender
-import implementation.T_soap2rest_automated_converter
 import org.json.JSONException
 
 import java.text.SimpleDateFormat
 import java.util.concurrent.LinkedBlockingQueue
 
+import static base.T_common_base_1_const.*
 import static base.T_common_base_3_utils.is_not_null
 import static base.T_common_base_3_utils.not
+import static base.T_tpn_base_4_const.*
 import static base.T_tpn_base_5_context.c
 import static base.T_tpn_base_5_context.init_custom
 import static base.T_tpn_base_6_util.*
