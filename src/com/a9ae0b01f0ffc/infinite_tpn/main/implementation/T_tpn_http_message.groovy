@@ -4,7 +4,6 @@ import annotations.I_black_box
 import annotations.I_fix_variable_scopes
 import base.T_tpn_base_6_util
 import groovy.transform.ToString
-import implementation.T_http_message
 
 @I_fix_variable_scopes
 @ToString(includeNames = true, includeFields = true, includeSuper = true)
@@ -20,16 +19,27 @@ class T_tpn_http_message extends T_http_message {
     Date p_post_date = GC_NULL_OBJ_REF as Date
     Integer p_tpn_internal_unique_id = GC_NULL_OBJ_REF as Integer
     String p_state = GC_EMPTY_STRING
-    T_tpn_standard_message_format p_tpn_standard_message_format = GC_NULL_OBJ_REF as T_tpn_standard_message_format
+    T_tpn_std_message_format p_tpn_std_message_format = GC_NULL_OBJ_REF as T_tpn_std_message_format
+    T_tpn_otp_message_format p_tpn_otp_message_format = GC_NULL_OBJ_REF as T_tpn_otp_message_format
 
     @I_black_box("error")
-    T_tpn_standard_message_format get_tpn_standard_message_format() {
-        return p_tpn_standard_message_format
+    T_tpn_std_message_format get_tpn_standard_message_format() {
+        return p_tpn_std_message_format
     }
 
     @I_black_box("error")
-    void set_tpn_standard_message_format(T_tpn_standard_message_format i_tpn_standard_message_format) {
-        p_tpn_standard_message_format = i_tpn_standard_message_format
+    void set_tpn_std_message_format(T_tpn_std_message_format i_tpn_standard_message_format) {
+        p_tpn_std_message_format = i_tpn_standard_message_format
+    }
+
+    @I_black_box("error")
+    T_tpn_otp_message_format get_otp_otp_message_format() {
+        return p_tpn_otp_message_format
+    }
+
+    @I_black_box("error")
+    void set_tpn_otp_message_format(T_tpn_otp_message_format i_tpn_otp_message_format) {
+        p_tpn_otp_message_format = i_tpn_otp_message_format
     }
 
     @I_black_box("error")

@@ -2,11 +2,12 @@ package implementation
 
 import base.T_tpn_base_6_util
 
-class T_tpn_standard_message_format extends T_tpn_base_6_util {
+class T_tpn_std_message_format extends T_tpn_base_6_util {
 
     String UserName = GC_EMPTY_STRING
     String Password = GC_EMPTY_STRING
     String UniqueID = GC_EMPTY_STRING
+    String UniqueIDFlag = GC_EMPTY_STRING
     String UniqueIDflag = GC_EMPTY_STRING
     String productID = GC_EMPTY_STRING
     String productName = GC_EMPTY_STRING
@@ -26,7 +27,6 @@ class T_tpn_standard_message_format extends T_tpn_base_6_util {
     String sourceAccountCurrency = GC_EMPTY_STRING
     String sourceAccountBalanceInt = GC_EMPTY_STRING
     String sourceAccountBalanceDec = GC_EMPTY_STRING
-    String populated = GC_EMPTY_STRING
     String AccountNumber = GC_EMPTY_STRING
     String AccountCurrency = GC_EMPTY_STRING
     String AccountBalanceInt = GC_EMPTY_STRING
@@ -70,11 +70,6 @@ class T_tpn_standard_message_format extends T_tpn_base_6_util {
     String additionalAmountCurrency = GC_EMPTY_STRING
     String additionalAmountInt = GC_EMPTY_STRING
     String additionalAmountDec = GC_EMPTY_STRING
-    String feeName = GC_EMPTY_STRING
-    String feeAmountCurrency = GC_EMPTY_STRING
-    String feeAmountInt = GC_EMPTY_STRING
-    String feeAmountDec = GC_EMPTY_STRING
-    String feeTransactionId = GC_EMPTY_STRING
     String acquirerId = GC_EMPTY_STRING
     String acquirerCountry = GC_EMPTY_STRING
     String acquirerInstitutionIDCode = GC_EMPTY_STRING
@@ -100,7 +95,75 @@ class T_tpn_standard_message_format extends T_tpn_base_6_util {
     String chipTransactionFlag = GC_EMPTY_STRING
     String paymentIndicator = GC_EMPTY_STRING
     String cardholderId = GC_EMPTY_STRING
-    //\/\/\/additionalData
+    String purchasingData = GC_EMPTY_STRING
+    String Purchase_Type = GC_EMPTY_STRING
+    String Service_Type = GC_EMPTY_STRING
+    String Fuel_Type = GC_EMPTY_STRING
+    String Unit_Measure = GC_EMPTY_STRING
+    String Quantity = GC_EMPTY_STRING
+    String Unit_Cost = GC_EMPTY_STRING
+    String Gross_Fuel_Price = GC_EMPTY_STRING
+    String Net_Fuel_Price = GC_EMPTY_STRING
+    String Gross_NonFuel_Price = GC_EMPTY_STRING
+    String Net_NonFuel_Price = GC_EMPTY_STRING
+    String Odometer_Reading = GC_EMPTY_STRING
+    String VAT_Rate = GC_EMPTY_STRING
+    String Misc_FuelTax_ExStatus = GC_EMPTY_STRING
+    String Misc_FuelTax = GC_EMPTY_STRING
+    String Misc_NonFuelTax_ExStatus = GC_EMPTY_STRING
+    String Misc_NonFuelTax = GC_EMPTY_STRING
+    String Local_Tax_Incl = GC_EMPTY_STRING
+    String Local_Tax = GC_EMPTY_STRING
+    String National_Tax_Incl = GC_EMPTY_STRING
+    String National_Tax = GC_EMPTY_STRING
+    String Other_Tax = GC_EMPTY_STRING
+    String Merchant_VAT_Reg = GC_EMPTY_STRING
+    String Customer_VAT_Reg = GC_EMPTY_STRING
+    String Customer_Ref_No = GC_EMPTY_STRING
+    String Message_Identifier = GC_EMPTY_STRING
+    String Addtl_Data_Flag = GC_EMPTY_STRING
+    String Summ_Comm_Code = GC_EMPTY_STRING
+    String Non_FuelCode_01 = GC_EMPTY_STRING
+    String Non_FuelCode_02 = GC_EMPTY_STRING
+    String Non_FuelCode_03 = GC_EMPTY_STRING
+    String Non_FuelCode_04 = GC_EMPTY_STRING
+    String Non_FuelCode_05 = GC_EMPTY_STRING
+    String Non_FuelCode_06 = GC_EMPTY_STRING
+    String Non_FuelCode_07 = GC_EMPTY_STRING
+    String Non_FuelCode_08 = GC_EMPTY_STRING
+    String Fuel_Brand = GC_EMPTY_STRING
+    String Fuel_Txn_VResults = GC_EMPTY_STRING
+    String Fuel_Accpt_Mode = GC_EMPTY_STRING
+    String Driver_Id = GC_EMPTY_STRING
+    String Job_Number = GC_EMPTY_STRING
+    String Fleet_Number = GC_EMPTY_STRING
+    String Vehicle_Reg_No = GC_EMPTY_STRING
+    String Product_Qualifier = GC_EMPTY_STRING
+    String Expanded_Fuel_Type = GC_EMPTY_STRING
+    String expNonFuelCode01 = GC_EMPTY_STRING
+    String expNonFuelCodeQty01 = GC_EMPTY_STRING
+    String expNonFuelCodeCost01 = GC_EMPTY_STRING
+    String expNonFuelCode02 = GC_EMPTY_STRING
+    String expNonFuelCodeQty02 = GC_EMPTY_STRING
+    String expNonFuelCodeCost02 = GC_EMPTY_STRING
+    String expNonFuelCode03 = GC_EMPTY_STRING
+    String expNonFuelCodeQty03 = GC_EMPTY_STRING
+    String expNonFuelCodeCost03 = GC_EMPTY_STRING
+    String expNonFuelCode04 = GC_EMPTY_STRING
+    String expNonFuelCodeQty04 = GC_EMPTY_STRING
+    String expNonFuelCodeCost04 = GC_EMPTY_STRING
+    String expNonFuelCode05 = GC_EMPTY_STRING
+    String expNonFuelCodeQty05 = GC_EMPTY_STRING
+    String expNonFuelCodeCost05 = GC_EMPTY_STRING
+    String expNonFuelCode06 = GC_EMPTY_STRING
+    String expNonFuelCodeQty06 = GC_EMPTY_STRING
+    String expNonFuelCodeCost06 = GC_EMPTY_STRING
+    String expNonFuelCode07 = GC_EMPTY_STRING
+    String expNonFuelCodeQty07 = GC_EMPTY_STRING
+    String expNonFuelCodeCost07 = GC_EMPTY_STRING
+    String expNonFuelCode08 = GC_EMPTY_STRING
+    String expNonFuelCodeQty08 = GC_EMPTY_STRING
+    String expNonFuelCodeCost08 = GC_EMPTY_STRING
     String availableBalance = GC_EMPTY_STRING
     String currentBalance = GC_EMPTY_STRING
     String lastCreditAmount = GC_EMPTY_STRING
@@ -110,7 +173,6 @@ class T_tpn_standard_message_format extends T_tpn_base_6_util {
     String transactionType = GC_EMPTY_STRING
     String settleAmount = GC_EMPTY_STRING
     String settleCurrency = GC_EMPTY_STRING
-    ///\/\/\additionalData
-    String fees_xml = GC_EMPTY_STRING
+    String fees = GC_EMPTY_STRING
 
 }

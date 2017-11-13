@@ -4,6 +4,7 @@ import Interfaces.I_http_message
 import annotations.I_black_box
 import annotations.I_fix_variable_scopes
 import base.T_middleware_base_4_const
+import base.T_middleware_base_5_app_context
 import base.T_middleware_base_6_util
 import groovy.time.TimeCategory
 import org.json.JSONException
@@ -11,10 +12,8 @@ import org.json.JSONException
 import java.text.SimpleDateFormat
 import java.util.concurrent.LinkedBlockingQueue
 
-import static base.T_common_base_1_const.*
 import static base.T_common_base_3_utils.is_not_null
 import static base.T_common_base_3_utils.not
-import static base.T_tpn_base_4_const.*
 import static base.T_tpn_base_5_context.c
 import static base.T_tpn_base_5_context.init_custom
 import static base.T_tpn_base_6_util.*
@@ -70,7 +69,7 @@ class T_tpn_channel_worker_thread extends Thread {
     }
 
     @I_black_box
-    Boolean is_obsolete(T_tpn_standard_message_format i_tpn_standard_message_format) {
+    Boolean is_obsolete(T_tpn_std_message_format i_tpn_standard_message_format) {
         Boolean l_is_obsolete = GC_FALSE
         if (is_not_null(c().GC_TPN_MAX_MESSAGE_AGE)) {
             Date l_posting_date = new SimpleDateFormat("dd-MMM-yyyy hh:mm:ss").parse(i_tpn_standard_message_format.transactionPostingDate + GC_SPACE + i_tpn_standard_message_format.transactionPostingTime)
@@ -90,90 +89,85 @@ class T_tpn_channel_worker_thread extends Thread {
     void process_message(T_tpn_http_message i_tpn_standard_xml_http_message) {
         try {
             T_http_sender.set_soft(GC_TRUE)
-            T_tpn_http_message l_tpn_http_message_to_send = i_tpn_standard_xml_http_message
-            i_tpn_standard_xml_http_message.set_payload_type(T_middleware_base_4_const.GC_PAYLOAD_TYPE_XML)
-            if (T_middleware_base_6_util.validate_xml(l_tpn_http_message_to_send.get_payload(), GC_TRUE)) {
-                i_tpn_standard_xml_http_message.set_service_name(c().GC_TPN_SERVICE_NAME)
-                inject_header(l_tpn_http_message_to_send)
-                i_tpn_standard_xml_http_message.set_tpn_standard_message_format(parse_payload(i_tpn_standard_xml_http_message))
-                if (is_obsolete(i_tpn_standard_xml_http_message.get_tpn_standard_message_format())) {
-                    l().log_warning(s.Obsolete_message_TPN_ID_Z1_CoreCard_ID_Z2, i_tpn_standard_xml_http_message.p_tpn_internal_unique_id, i_tpn_standard_xml_http_message.p_trxn_id)
-                    sql_update(PC_SQL_UPDATE_FAIL, GC_STATUS_OBSOLETE, GC_EMPTY_STRING, i_tpn_standard_xml_http_message.p_tpn_internal_unique_id)
+            T_tpn_http_message l_message_to_send = i_tpn_standard_xml_http_message
+            i_tpn_standard_xml_http_message.set_service_name(c().GC_TPN_SERVICE_NAME)
+            if (c().GC_SOURCE_MESSAGE_FORMAT == GC_SOURCE_MESSAGE_FORMAT_OTP) {
+                i_tpn_standard_xml_http_message.set_payload_type(T_middleware_base_4_const.GC_PAYLOAD_TYPE_JSON)
+                if (not(T_middleware_base_6_util.validate_json(l_message_to_send.get_payload(), GC_TRUE))) {
+                    l().log_warning(s.Invalid_JSON_OTP_Request_for_message_TPN_ID_Z1_CoreCard_ID_Z2, i_tpn_standard_xml_http_message.p_tpn_internal_unique_id, i_tpn_standard_xml_http_message.p_trxn_id)
+                    sql_update(PC_SQL_UPDATE_FAIL, GC_STATUS_FAILED_INVALID_REQUEST, GC_EMPTY_STRING, i_tpn_standard_xml_http_message.p_tpn_internal_unique_id)
                     return
                 }
-                if (c().GC_USE_CONVERSION_TEMPLATES == GC_TRUE_STRING) {
-                    l_tpn_http_message_to_send = new T_tpn_conversion_module().convert_http_message(l_tpn_http_message_to_send) as T_tpn_http_message
-                } else if (c().GC_PAYLOAD_TYPE == T_middleware_base_4_const.GC_PAYLOAD_TYPE_JSON) {
-                    HashMap<String, I_http_message> l_messages_map = new HashMap<String, I_http_message>()
-                    l_messages_map.put(c().GC_TPN_SERVICE_NAME, i_tpn_standard_xml_http_message)
-                    l_tpn_http_message_to_send.setP_payload_json(new T_soap2rest_automated_converter().convert_http_messages(l_messages_map, c().GC_TPN_SERVICE_NAME).get_payload())
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload_json())
-                } else {
-                    l_tpn_http_message_to_send.set_header("Accept", "*/*")
-                    l_tpn_http_message_to_send.set_header("Accept-Language", "en-US,en;q=0.8,ru;q=0.6")
-                    l_tpn_http_message_to_send.set_header("Connection", "keep-alive")
-                    l_tpn_http_message_to_send.set_header("Content-Type", "application/soap+xml; charset=\"UTF-8\"")
-                    l_tpn_http_message_to_send.set_header("Host", "dev.freeway-aa.co.za")
-                    l_tpn_http_message_to_send.set_header("SOAPAction", "http://tempuri.org/ITransaction/TransactionNotificationRequest")
-                    l_tpn_http_message_to_send.set_header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36")
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("<soap:Envelope ", "<soap:Envelope "))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("<tem:TransactionNotificationRequest ", "<TransactionNotificationRequest "))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("<a:header ", "<header "))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("</a:header>", "</header>"))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("<a:product ", "<product "))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("</a:product>", "</product>"))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("<a:businessAccount ", "<businessAccount "))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("</a:businessAccount>", "</businessAccount>"))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("<a:card ", "<card "))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("</a:card>", "</card>"))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("<a:account ", "<account "))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("</a:account>", "</account>"))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("<a:transaction ", "<transaction "))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("</a:transaction>", "</transaction>"))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("<a:network ", "<network "))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("</a:network>", "</network>"))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("<a:amounts ", "<amounts "))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("</a:amounts>", "</amounts>"))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("<a:fees ", "<fees "))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("</a:fees>", "</fees>"))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("<a:pos_merchant ", "<pos_merchant "))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("</a:pos_merchant>", "</pos_merchant>"))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("<a:fleet_48_data ", "<fleet_48_data "))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("</a:fleet_48_data>", "</fleet_48_data>"))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("<a:fleet_104_data ", "<fleet_104_data "))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("</a:fleet_104_data>", "</fleet_104_data>"))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("<a:fleet_125_data ", "<fleet_125_data "))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("</a:fleet_125_data>", "</fleet_125_data>"))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("<a:additionalData ", "<additionalData "))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("</a:additionalData>", "</additionalData>"))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("</tem:TransactionNotificationRequest>", "</TransactionNotificationRequest>"))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("xmlns:tem", "xmlns"))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("https://wp1.wirecard.com/TransactionNotification/Fleet", "http://schemas.datacontract.org/2004/07/Transactions.Contracts"))
-                    l_tpn_http_message_to_send.set_payload(l_tpn_http_message_to_send.get_payload().replace("<soap:Header/>", "<soap:Header><addr:Action xmlns:addr=\"http://www.w3.org/2005/08/addressing\">http://tempuri.org/ITransaction/TransactionNotificationRequest</addr:Action></soap:Header>"))
-                }
-                sql_update(PC_SQL_UPDATE_SENDING, GC_STATUS_SENDING, p_thread_number, l_tpn_http_message_to_send.p_tpn_internal_unique_id)
-                l().log_info(s.Sending_message_Z1, l_tpn_http_message_to_send.get_tpn_internal_unique_id())
-                l_tpn_http_message_to_send.set_payload_type(c().GC_PAYLOAD_TYPE)
-                I_http_message l_http_response = T_http_sender.send_http_request(l_tpn_http_message_to_send)
-                Integer l_response_code = l_http_response.get_status()
-                if (l_response_code == GC_HTTP_RESP_CODE_OK) {
-                    sql_update(PC_SQL_UPDATE_SUCCESS, GC_STATUS_DELIVERED, serialize_for_db(l_http_response), l_tpn_http_message_to_send.p_tpn_internal_unique_id)
-                } else if (l_response_code == GC_RESPONSE_CODE_CONNECTION_REFUSED) {
-                    l().log_warning(s.Connection_refused_for_message_TPN_ID_Z1_CoreCard_ID_Z2, l_tpn_http_message_to_send.p_tpn_internal_unique_id, l_tpn_http_message_to_send.p_trxn_id)
-                    sql_update(PC_SQL_UPDATE_FAIL, GC_STATUS_FAILED_NO_CONNECTION, serialize_for_db(l_http_response), l_tpn_http_message_to_send.p_tpn_internal_unique_id)
-                } else if (l_response_code == GC_RESPONSE_CODE_INVALID_REQUEST) {
-                    l().log_warning(s.Invalid_Request_for_message_TPN_ID_Z1_CoreCard_ID_Z2, l_tpn_http_message_to_send.p_tpn_internal_unique_id, l_tpn_http_message_to_send.p_trxn_id)
-                    sql_update(PC_SQL_UPDATE_FAIL, GC_STATUS_FAILED_INVALID_REQUEST, serialize_for_db(l_http_response), l_tpn_http_message_to_send.p_tpn_internal_unique_id)
-                } else if (l_response_code == GC_RESPONSE_CODE_INVALID_RESPONSE) {
-                    l().log_warning(s.Invalid_Response_for_message_TPN_ID_Z1_CoreCard_ID_Z2, l_tpn_http_message_to_send.p_tpn_internal_unique_id, l_tpn_http_message_to_send.p_trxn_id)
-                    sql_update(PC_SQL_UPDATE_FAIL, GC_STATUS_FAILED_INVALID_RESPONSE, serialize_for_db(l_http_response), l_tpn_http_message_to_send.p_tpn_internal_unique_id)
-                } else {
-                    l().log_warning(s.Unsuccessful_HTTP_Response_Code_Z1_for_message_TPN_ID_Z2_CoreCard_ID_Z3, l_response_code, l_tpn_http_message_to_send.p_tpn_internal_unique_id, l_tpn_http_message_to_send.p_trxn_id)
-                    sql_update(PC_SQL_UPDATE_FAIL, GC_STATUS_FAILED_RESPONSE, serialize_for_db(l_http_response), l_tpn_http_message_to_send.p_tpn_internal_unique_id)
-                }
+                i_tpn_standard_xml_http_message.set_tpn_otp_message_format(parse_otp_message_format(i_tpn_standard_xml_http_message))
             } else {
-                l().log_warning(s.Invalid_Request_for_message_TPN_ID_Z1_CoreCard_ID_Z2, i_tpn_standard_xml_http_message.p_tpn_internal_unique_id, i_tpn_standard_xml_http_message.p_trxn_id)
-                sql_update(PC_SQL_UPDATE_FAIL, GC_STATUS_FAILED_INVALID_REQUEST, GC_EMPTY_STRING, i_tpn_standard_xml_http_message.p_tpn_internal_unique_id)
+                i_tpn_standard_xml_http_message.set_payload_type(T_middleware_base_4_const.GC_PAYLOAD_TYPE_XML)
+                if (not(T_middleware_base_6_util.validate_xml(l_message_to_send.get_payload(), GC_TRUE))) {
+                    l().log_warning(s.Invalid_XML_Standard_Request_for_message_TPN_ID_Z1_CoreCard_ID_Z2, i_tpn_standard_xml_http_message.p_tpn_internal_unique_id, i_tpn_standard_xml_http_message.p_trxn_id)
+                    sql_update(PC_SQL_UPDATE_FAIL, GC_STATUS_FAILED_INVALID_REQUEST, GC_EMPTY_STRING, i_tpn_standard_xml_http_message.p_tpn_internal_unique_id)
+                    return
+                }
+                i_tpn_standard_xml_http_message.set_tpn_std_message_format(parse_std_message_format(i_tpn_standard_xml_http_message))
+            }
+            if (is_obsolete(i_tpn_standard_xml_http_message.get_tpn_standard_message_format())) {
+                l().log_warning(s.Obsolete_message_TPN_ID_Z1_CoreCard_ID_Z2, i_tpn_standard_xml_http_message.p_tpn_internal_unique_id, i_tpn_standard_xml_http_message.p_trxn_id)
+                sql_update(PC_SQL_UPDATE_FAIL, GC_STATUS_OBSOLETE, GC_EMPTY_STRING, i_tpn_standard_xml_http_message.p_tpn_internal_unique_id)
+                return
+            }
+            if (c().GC_USE_CONVERSION_TEMPLATES == GC_TRUE_STRING) {
+                if (c().GC_SOURCE_MESSAGE_FORMAT == GC_SOURCE_MESSAGE_FORMAT_OTP) {
+                    l_message_to_send.set_uri(l_message_to_send.get_uri() + new T_tpn_conversion_module().otp2external(l_message_to_send).get_payload())
+                    l_message_to_send.set_payload_json(GC_EMPTY_STRING)
+                    l_message_to_send.set_payload(GC_EMPTY_STRING)
+                } else {
+                    l_message_to_send = new T_tpn_conversion_module().std2external(l_message_to_send) as T_tpn_http_message
+                }
+            } else if (c().GC_PAYLOAD_TYPE == T_middleware_base_4_const.GC_PAYLOAD_TYPE_JSON) {
+                HashMap<String, I_http_message> l_messages_map = new HashMap<String, I_http_message>()
+                l_messages_map.put(c().GC_TPN_SERVICE_NAME, i_tpn_standard_xml_http_message)
+                l_message_to_send.set_payload_json(new T_soap2rest_automated_converter().convert_http_messages(l_messages_map, c().GC_TPN_SERVICE_NAME).get_payload())
+                l_message_to_send.set_payload(l_message_to_send.get_payload_json())
+            }
+            if (is_not_null(c().GC_ACCEPT)) {
+                l_message_to_send.set_header(GC_ACCEPT, c().GC_ACCEPT)
+            }
+            if (is_not_null(c().GC_ACCEPT_LANGUAGE)) {
+            l_message_to_send.set_header(GC_ACCEPT_LANGUAGE, c().GC_ACCEPT)
+            }
+            if (is_not_null(c().GC_CONNECTION)) {
+                l_message_to_send.set_header(GC_CONNECTION, c().GC_CONNECTION)
+            }
+            if (is_not_null(c().GC_CONTENT_TYPE)) {
+                l_message_to_send.set_header(GC_CONTENT_TYPE, c().GC_CONTENT_TYPE)
+            }
+            if (is_not_null(c().GC_HOST)) {
+                l_message_to_send.set_header(GC_HOST, c().GC_HOST)
+            }
+            if (is_not_null(c().GC_SOAPACTION)) {
+                l_message_to_send.set_header(GC_SOAPACTION, c().GC_SOAPACTION)
+            }
+            if (is_not_null(c().GC_USER_AGENT)) {
+                l_message_to_send.set_header(GC_USER_AGENT, c().GC_USER_AGENT)
+            }
+            sql_update(PC_SQL_UPDATE_SENDING, GC_STATUS_SENDING, p_thread_number, l_message_to_send.p_tpn_internal_unique_id)
+            l().log_info(s.Sending_message_Z1, l_message_to_send.get_tpn_internal_unique_id())
+            l_message_to_send.set_payload_type(c().GC_PAYLOAD_TYPE)
+            T_middleware_base_5_app_context.app_conf().GC_TEST_HTTP_PLAINTEXT_MODE
+            I_http_message l_http_response = T_http_sender.send_http_request(l_message_to_send)
+            Integer l_response_code = l_http_response.get_status()
+            if (l_response_code == GC_HTTP_RESP_CODE_OK) {
+                sql_update(PC_SQL_UPDATE_SUCCESS, GC_STATUS_DELIVERED, serialize_for_db(l_http_response), l_message_to_send.p_tpn_internal_unique_id)
+            } else if (l_response_code == GC_RESPONSE_CODE_CONNECTION_REFUSED) {
+                l().log_warning(s.Connection_refused_for_message_TPN_ID_Z1_CoreCard_ID_Z2, l_message_to_send.p_tpn_internal_unique_id, l_message_to_send.p_trxn_id)
+                sql_update(PC_SQL_UPDATE_FAIL, GC_STATUS_FAILED_NO_CONNECTION, serialize_for_db(l_http_response), l_message_to_send.p_tpn_internal_unique_id)
+            } else if (l_response_code == GC_RESPONSE_CODE_INVALID_REQUEST) {
+                l().log_warning(s.Invalid_Request_for_message_TPN_ID_Z1_CoreCard_ID_Z2, l_message_to_send.p_tpn_internal_unique_id, l_message_to_send.p_trxn_id)
+                sql_update(PC_SQL_UPDATE_FAIL, GC_STATUS_FAILED_INVALID_REQUEST, serialize_for_db(l_http_response), l_message_to_send.p_tpn_internal_unique_id)
+            } else if (l_response_code == GC_RESPONSE_CODE_INVALID_RESPONSE) {
+                l().log_warning(s.Invalid_Response_for_message_TPN_ID_Z1_CoreCard_ID_Z2, l_message_to_send.p_tpn_internal_unique_id, l_message_to_send.p_trxn_id)
+                sql_update(PC_SQL_UPDATE_FAIL, GC_STATUS_FAILED_INVALID_RESPONSE, serialize_for_db(l_http_response), l_message_to_send.p_tpn_internal_unique_id)
+            } else {
+                l().log_warning(s.Unsuccessful_HTTP_Response_Code_Z1_for_message_TPN_ID_Z2_CoreCard_ID_Z3, l_response_code, l_message_to_send.p_tpn_internal_unique_id, l_message_to_send.p_trxn_id)
+                sql_update(PC_SQL_UPDATE_FAIL, GC_STATUS_FAILED_RESPONSE, serialize_for_db(l_http_response), l_message_to_send.p_tpn_internal_unique_id)
             }
         } catch (Throwable e_others) {
             l().log_warning(s.Exception_Z1_for_message_TPN_ID_Z2_CoreCard_ID_Z3, e_others, i_tpn_standard_xml_http_message.p_tpn_internal_unique_id, i_tpn_standard_xml_http_message.p_trxn_id)

@@ -7,6 +7,7 @@ import groovy.sql.Sql
 import groovy.text.SimpleTemplateEngine
 import groovy.text.Template
 import base.T_middleware_base_5_app_context
+import other.T_template_manager
 
 class T_tpn_base_5_context extends T_tpn_base_4_const {
 
@@ -16,6 +17,7 @@ class T_tpn_base_5_context extends T_tpn_base_4_const {
     protected Long p_sql_last_init_time_millis = GC_NULL_OBJ_REF as Long
     protected Template p_template_scheme = GC_NULL_OBJ_REF as Template
     protected Template p_template_bank = GC_NULL_OBJ_REF as Template
+    protected T_template_manager p_otp_template_manager = GC_NULL_OBJ_REF as T_template_manager
 
     static void init_custom(String i_commons_conf_file_name) {
         get_context().p_commons = new T_tpn_conf(i_commons_conf_file_name)
@@ -31,6 +33,14 @@ class T_tpn_base_5_context extends T_tpn_base_4_const {
             get_context().p_template_scheme = new SimpleTemplateEngine().createTemplate(new File(c().GC_TEMPLATE_NAME_SCHEME))
             get_context().p_template_bank = new SimpleTemplateEngine().createTemplate(new File(c().GC_TEMPLATE_NAME_BANK))
         }
+        if (is_not_null(c().GC_OTP_TEMPLATES_PATH)) {
+            get_context().p_otp_template_manager = new T_template_manager()
+            get_context().p_otp_template_manager.init_templates(c().GC_OTP_TEMPLATES_PATH)
+        }
+    }
+
+    static T_template_manager get_template_manager() {
+        return get_context().p_otp_template_manager
     }
 
     static Template get_template_scheme() {

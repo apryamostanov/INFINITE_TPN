@@ -29,5 +29,14 @@ class T_tpn_base_4_const extends T_common_base_3_utils {
     public final static String GC_UNIQUE_ID_FLAG_RETRY = "1"
     public final static String GC_UNIQUE_ID_FLAG_NORMAL = "0"
     public final static Long GC_SQL_RECONNECT_RETRY_PERIOD_MILLISECONDS = 60000
+    public final static String GC_ACCEPT = "Accept"
+    public final static String GC_ACCEPT_LANGUAGE = "Accept-Language"
+    public final static String GC_CONNECTION = "Connection"
+    public final static String GC_CONTENT_TYPE = "Content-Type"
+    public final static String GC_HOST = "Host"
+    public final static String GC_SOAPACTION =  "SOAPAction"
+    public final static String GC_USER_AGENT = "User-Agent"
+    public final static String GC_SOURCE_MESSAGE_FORMAT_WDIP = "WDIP"
+    public final static String GC_SOURCE_MESSAGE_FORMAT_OTP = "OTP"
 
 }

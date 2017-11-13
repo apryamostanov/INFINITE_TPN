@@ -3,13 +3,14 @@ package base
 import Interfaces.I_http_message
 import annotations.I_black_box
 import annotations.I_fix_variable_scopes
-import base.T_logging_base_5_context
 import com.mysql.jdbc.exceptions.jdbc4.MySQLNonTransientConnectionException
+import groovy.json.JsonBuilder
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.util.slurpersupport.GPathResult
 import implementation.T_tpn_http_message
-import implementation.T_tpn_standard_message_format
+import implementation.T_tpn_otp_message_format
+import implementation.T_tpn_std_message_format
 import other.T_logger
 
 import java.sql.SQLException
@@ -47,8 +48,19 @@ class T_tpn_base_6_util extends T_tpn_base_5_context {
     }
 
     @I_black_box("error")
-    static T_tpn_standard_message_format parse_payload(T_tpn_http_message i_http_message) {
-        T_tpn_standard_message_format l_tpn_standard_message_format = new T_tpn_standard_message_format()
+    static T_tpn_otp_message_format parse_otp_message_format(T_tpn_http_message i_http_message) {
+        T_tpn_otp_message_format l_tpn_standard_message_format = new T_tpn_otp_message_format()
+        JsonBuilder l_json_builder = i_http_message.get_json_builder()
+        l_tpn_standard_message_format.language = l_json_builder.content.language
+        l_tpn_standard_message_format.OTP = l_json_builder.content.OTP
+        l_tpn_standard_message_format.phone = l_json_builder.content.phone
+        l_tpn_standard_message_format.scope = l_json_builder.content.scope
+        return l_tpn_standard_message_format
+    }
+
+    @I_black_box("error")
+    static T_tpn_std_message_format parse_std_message_format(T_tpn_http_message i_http_message) {
+        T_tpn_std_message_format l_tpn_standard_message_format = new T_tpn_std_message_format()
         GPathResult l_gpath_result = new XmlSlurper().parseText(i_http_message.get_payload())
         l_tpn_standard_message_format.productID = l_gpath_result?.Body?.TransactionNotificationRequest?.product?.productID?.text()
         l_tpn_standard_message_format.productName = l_gpath_result?.Body?.TransactionNotificationRequest?.product?.productName?.text()
@@ -68,7 +80,6 @@ class T_tpn_base_6_util extends T_tpn_base_5_context {
         l_tpn_standard_message_format.sourceAccountCurrency = l_gpath_result?.Body?.TransactionNotificationRequest?.account?.sourceAccountCurrency?.text()
         l_tpn_standard_message_format.sourceAccountBalanceInt = l_gpath_result?.Body?.TransactionNotificationRequest?.account?.sourceAccountBalanceInt?.text()
         l_tpn_standard_message_format.sourceAccountBalanceDec = l_gpath_result?.Body?.TransactionNotificationRequest?.account?.sourceAccountBalanceDec?.text()
-        l_tpn_standard_message_format.populated = l_gpath_result?.Body?.TransactionNotificationRequest?.account?.populated?.text()
         l_tpn_standard_message_format.AccountNumber = l_gpath_result?.Body?.TransactionNotificationRequest?.account?.AccountNumber?.text()
         l_tpn_standard_message_format.AccountCurrency = l_gpath_result?.Body?.TransactionNotificationRequest?.account?.AccountCurrency?.text()
         l_tpn_standard_message_format.AccountBalanceInt = l_gpath_result?.Body?.TransactionNotificationRequest?.account?.AccountBalanceInt?.text()
@@ -112,11 +123,6 @@ class T_tpn_base_6_util extends T_tpn_base_5_context {
         l_tpn_standard_message_format.additionalAmountCurrency = l_gpath_result?.Body?.TransactionNotificationRequest?.amounts?.additionalAmountCurrency?.text()
         l_tpn_standard_message_format.additionalAmountInt = l_gpath_result?.Body?.TransactionNotificationRequest?.amounts?.additionalAmountInt?.text()
         l_tpn_standard_message_format.additionalAmountDec = l_gpath_result?.Body?.TransactionNotificationRequest?.amounts?.additionalAmountDec?.text()
-        l_tpn_standard_message_format.feeName = l_gpath_result?.Body?.TransactionNotificationRequest?.fees?.feeName?.text()
-        l_tpn_standard_message_format.feeAmountCurrency = l_gpath_result?.Body?.TransactionNotificationRequest?.fees?.feeAmountCurrency?.text()
-        l_tpn_standard_message_format.feeAmountInt = l_gpath_result?.Body?.TransactionNotificationRequest?.fees?.feeAmountInt?.text()
-        l_tpn_standard_message_format.feeAmountDec = l_gpath_result?.Body?.TransactionNotificationRequest?.fees?.feeAmountDec?.text()
-        l_tpn_standard_message_format.feeTransactionId = l_gpath_result?.Body?.TransactionNotificationRequest?.fees?.feeTransactionId?.text()
         l_tpn_standard_message_format.acquirerId = l_gpath_result?.Body?.TransactionNotificationRequest?.pos_merchant?.acquirerId?.text()
         l_tpn_standard_message_format.acquirerCountry = l_gpath_result?.Body?.TransactionNotificationRequest?.pos_merchant?.acquirerCountry?.text()
         l_tpn_standard_message_format.acquirerInstitutionIDCode = l_gpath_result?.Body?.TransactionNotificationRequest?.pos_merchant?.acquirerInstitutionIDCode?.text()
@@ -151,6 +157,81 @@ class T_tpn_base_6_util extends T_tpn_base_5_context {
         l_tpn_standard_message_format.transactionType = l_gpath_result?.Body?.TransactionNotificationRequest?.additionalData?.transactionType?.text()
         l_tpn_standard_message_format.settleAmount = l_gpath_result?.Body?.TransactionNotificationRequest?.additionalData?.settleAmount?.text()
         l_tpn_standard_message_format.settleCurrency = l_gpath_result?.Body?.TransactionNotificationRequest?.additionalData?.settleCurrency?.text()
+        l_tpn_standard_message_format.purchasingData = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_48_data?.purchasingData?.text()
+        l_tpn_standard_message_format.Purchase_Type = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Purchase_Type?.text()
+        l_tpn_standard_message_format.Service_Type = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Service_Type?.text()
+        l_tpn_standard_message_format.Fuel_Type = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Fuel_Type?.text()
+        l_tpn_standard_message_format.Unit_Measure = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Unit_Measure?.text()
+        l_tpn_standard_message_format.Quantity = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Quantity?.text()
+        l_tpn_standard_message_format.Unit_Cost = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Unit_Cost?.text()
+        l_tpn_standard_message_format.Gross_Fuel_Price = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Gross_Fuel_Price?.text()
+        l_tpn_standard_message_format.Net_Fuel_Price = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Net_Fuel_Price?.text()
+        l_tpn_standard_message_format.Gross_NonFuel_Price = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Gross_NonFuel_Price?.text()
+        l_tpn_standard_message_format.Net_NonFuel_Price = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Net_NonFuel_Price?.text()
+        l_tpn_standard_message_format.Odometer_Reading = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Odometer_Reading?.text()
+        l_tpn_standard_message_format.VAT_Rate = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.VAT_Rate?.text()
+        l_tpn_standard_message_format.Misc_FuelTax_ExStatus = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Misc_FuelTax_ExStatus?.text()
+        l_tpn_standard_message_format.Misc_FuelTax = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Misc_FuelTax?.text()
+        l_tpn_standard_message_format.Misc_NonFuelTax_ExStatus = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Misc_NonFuelTax_ExStatus?.text()
+        l_tpn_standard_message_format.Misc_NonFuelTax = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Misc_NonFuelTax?.text()
+        l_tpn_standard_message_format.Local_Tax_Incl = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Local_Tax_Incl?.text()
+        l_tpn_standard_message_format.Local_Tax = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Local_Tax?.text()
+        l_tpn_standard_message_format.National_Tax_Incl = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.National_Tax_Incl?.text()
+        l_tpn_standard_message_format.National_Tax = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.National_Tax?.text()
+        l_tpn_standard_message_format.Other_Tax = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Other_Tax?.text()
+        l_tpn_standard_message_format.Merchant_VAT_Reg = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Merchant_VAT_Reg?.text()
+        l_tpn_standard_message_format.Customer_VAT_Reg = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Customer_VAT_Reg?.text()
+        l_tpn_standard_message_format.Customer_Ref_No = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Customer_Ref_No?.text()
+        l_tpn_standard_message_format.Message_Identifier = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Message_Identifier?.text()
+        l_tpn_standard_message_format.Addtl_Data_Flag = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Addtl_Data_Flag?.text()
+        l_tpn_standard_message_format.Summ_Comm_Code = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Summ_Comm_Code?.text()
+        l_tpn_standard_message_format.Non_FuelCode_01 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Non_FuelCode_01?.text()
+        l_tpn_standard_message_format.Non_FuelCode_02 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Non_FuelCode_02?.text()
+        l_tpn_standard_message_format.Non_FuelCode_03 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Non_FuelCode_03?.text()
+        l_tpn_standard_message_format.Non_FuelCode_04 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Non_FuelCode_04?.text()
+        l_tpn_standard_message_format.Non_FuelCode_05 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Non_FuelCode_05?.text()
+        l_tpn_standard_message_format.Non_FuelCode_06 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Non_FuelCode_06?.text()
+        l_tpn_standard_message_format.Non_FuelCode_07 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Non_FuelCode_07?.text()
+        l_tpn_standard_message_format.Non_FuelCode_08 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Non_FuelCode_08?.text()
+        l_tpn_standard_message_format.Fuel_Brand = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Fuel_Brand?.text()
+        l_tpn_standard_message_format.Fuel_Txn_VResults = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Fuel_Txn_VResults?.text()
+        l_tpn_standard_message_format.Fuel_Accpt_Mode = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Fuel_Accpt_Mode?.text()
+        l_tpn_standard_message_format.Driver_Id = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Driver_Id?.text()
+        l_tpn_standard_message_format.Job_Number = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Job_Number?.text()
+        l_tpn_standard_message_format.Fleet_Number = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Fleet_Number?.text()
+        l_tpn_standard_message_format.Vehicle_Reg_No = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Vehicle_Reg_No?.text()
+        l_tpn_standard_message_format.Product_Qualifier = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Product_Qualifier?.text()
+        l_tpn_standard_message_format.Expanded_Fuel_Type = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_104_data?.Expanded_Fuel_Type?.text()
+        l_tpn_standard_message_format.expNonFuelCode01 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_125_data?.expNonFuelCode01?.text()
+        l_tpn_standard_message_format.expNonFuelCodeQty01 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_125_data?.expNonFuelCodeQty01?.text()
+        l_tpn_standard_message_format.expNonFuelCodeCost01 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_125_data?.expNonFuelCodeCost01?.text()
+        l_tpn_standard_message_format.expNonFuelCode02 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_125_data?.expNonFuelCode02?.text()
+        l_tpn_standard_message_format.expNonFuelCodeQty02 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_125_data?.expNonFuelCodeQty02?.text()
+        l_tpn_standard_message_format.expNonFuelCodeCost02 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_125_data?.expNonFuelCodeCost02?.text()
+        l_tpn_standard_message_format.expNonFuelCode03 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_125_data?.expNonFuelCode03?.text()
+        l_tpn_standard_message_format.expNonFuelCodeQty03 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_125_data?.expNonFuelCodeQty03?.text()
+        l_tpn_standard_message_format.expNonFuelCodeCost03 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_125_data?.expNonFuelCodeCost03?.text()
+        l_tpn_standard_message_format.expNonFuelCode04 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_125_data?.expNonFuelCode04?.text()
+        l_tpn_standard_message_format.expNonFuelCodeQty04 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_125_data?.expNonFuelCodeQty04?.text()
+        l_tpn_standard_message_format.expNonFuelCodeCost04 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_125_data?.expNonFuelCodeCost04?.text()
+        l_tpn_standard_message_format.expNonFuelCode05 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_125_data?.expNonFuelCode05?.text()
+        l_tpn_standard_message_format.expNonFuelCodeQty05 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_125_data?.expNonFuelCodeQty05?.text()
+        l_tpn_standard_message_format.expNonFuelCodeCost05 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_125_data?.expNonFuelCodeCost05?.text()
+        l_tpn_standard_message_format.expNonFuelCode06 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_125_data?.expNonFuelCode06?.text()
+        l_tpn_standard_message_format.expNonFuelCodeQty06 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_125_data?.expNonFuelCodeQty06?.text()
+        l_tpn_standard_message_format.expNonFuelCodeCost06 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_125_data?.expNonFuelCodeCost06?.text()
+        l_tpn_standard_message_format.expNonFuelCode07 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_125_data?.expNonFuelCode07?.text()
+        l_tpn_standard_message_format.expNonFuelCodeQty07 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_125_data?.expNonFuelCodeQty07?.text()
+        l_tpn_standard_message_format.expNonFuelCodeCost07 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_125_data?.expNonFuelCodeCost07?.text()
+        l_tpn_standard_message_format.expNonFuelCode08 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_125_data?.expNonFuelCode08?.text()
+        l_tpn_standard_message_format.expNonFuelCodeQty08 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_125_data?.expNonFuelCodeQty08?.text()
+        l_tpn_standard_message_format.expNonFuelCodeCost08 = l_gpath_result?.Body?.TransactionNotificationRequest?.fleet_125_data?.expNonFuelCodeCost08?.text()
+        l_gpath_result?.Body?.TransactionNotificationRequest?.fees?.fee?.each() { l_fee->
+        l_tpn_standard_message_format.fees += """<a:fee><a:feeName>${l_fee.feeName?.text()}</a:feeName>
+          <a:feeAmountCurrency>${l_fee.feeAmountCurrency?.text()}</a:feeAmountCurrency>
+          <a:feeAmountInt>${l_fee.feeAmountInt?.text()}</a:feeAmountInt>
+          <a:feeAmountDec>${l_fee.feeAmountDec?.text()}</a:feeAmountDec></a:fee>""".toString()
+        }
         return l_tpn_standard_message_format
     }
 
