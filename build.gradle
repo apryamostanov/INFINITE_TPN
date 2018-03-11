@@ -13,6 +13,7 @@ dependencies {
     compile 'a9ae0b01f0ffc:INFINITE_LOGGING:1.0.0.BETA.002'
     compile 'a9ae0b01f0ffc:INFINITE_MIDDLEWARE:2.1.3'
     compile 'mysql:mysql-connector-java:5.1.44'
+    compile 'com.microsoft.sqlserver:mssql-jdbc:6.2.2.jre8'
     testCompile 'junit:junit:4.12'
 }
 

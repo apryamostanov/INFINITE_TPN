@@ -22,11 +22,11 @@ import static base.T_tpn_base_6_util.*
 class T_tpn_channel_worker_thread extends Thread {
 
     static
-    final String PC_SQL_UPDATE_SENDING = "update messages set status=?, thread_number=?, send_time=now() where tpn_internal_unique_id=?"
+    final String PC_SQL_UPDATE_SENDING = "update messages set status=?, thread_number=?, send_time=SYSDATETIME() where tpn_internal_unique_id=?"
     static
-    final String PC_SQL_UPDATE_SUCCESS = "update messages set status=?, response_payload=?, receive_time=now() where tpn_internal_unique_id=?"
+    final String PC_SQL_UPDATE_SUCCESS = "update messages set status=?, response_payload=?, receive_time=SYSDATETIME() where tpn_internal_unique_id=?"
     static
-    final String PC_SQL_UPDATE_FAIL = "update messages set status=?, retry_count=ifnull(retry_count, 0) + 1, response_payload=?, receive_time=now() where tpn_internal_unique_id=?"
+    final String PC_SQL_UPDATE_FAIL = "update messages set status=?, retry_count=isnull(retry_count, 0) + 1, response_payload=?, receive_time=SYSDATETIME() where tpn_internal_unique_id=?"
     String p_channel_name = GC_EMPTY_STRING
     String p_endpoint = GC_EMPTY_STRING
     Integer p_thread_number = GC_ZERO
