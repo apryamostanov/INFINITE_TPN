@@ -5,6 +5,10 @@ import static base.T_logging_base_4_const.*
 
 class T_tpn_conf extends T_common_conf {
 
+    /*
+    TODO: Headers config, multiple channels, SMS Global fix, Duplicate OTP check (by source); use groovy scripts instead of templates; escaping; archiving
+     */
+
     String GC_TPN_CLASSES_CONF
     String GC_BLACK_BOX_CONFIG
     String GC_THREAD_CONFIG_FILE_NAME
@@ -38,6 +42,7 @@ class T_tpn_conf extends T_common_conf {
     String GC_SOURCE_MESSAGE_FORMAT
     String GC_TPN_EXTERNAL_FROM
     String GC_OTP_TEMPLATES_PATH
+    String GC_OTP_DEFAULT_LANGUAGE
 
     T_tpn_conf(String i_conf_file_name) {
         super(i_conf_file_name)
@@ -78,5 +83,6 @@ class T_tpn_conf extends T_common_conf {
         GC_SOURCE_MESSAGE_FORMAT = nvl_empty_map(get_conf().source_message_format, GC_SOURCE_MESSAGE_FORMAT)
         GC_TPN_EXTERNAL_FROM = nvl_empty_map(get_conf().tpn_external_from, GC_TPN_EXTERNAL_FROM)
         GC_OTP_TEMPLATES_PATH = nvl_empty_map(get_conf().otp_templates_path, GC_OTP_TEMPLATES_PATH)
+        GC_OTP_DEFAULT_LANGUAGE = nvl_empty_map(get_conf().otp_default_language, GC_OTP_DEFAULT_LANGUAGE)
     }
 }

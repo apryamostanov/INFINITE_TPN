@@ -120,6 +120,7 @@ class T_tpn_channel_master_thread extends Thread {
     @Override
     void run() {
         setName(GC_MASTER_TPN_THREAD_NAME_PREFIX + p_channel_name)
+        System.out.println("Initializing master thread: " + getName())
         init_custom(p_config_file_name)
         run_with_logging()
     }

@@ -127,27 +127,7 @@ class T_tpn_channel_worker_thread extends Thread {
                 l_message_to_send.set_payload_json(new T_soap2rest_automated_converter().convert_http_messages(l_messages_map, c().GC_TPN_SERVICE_NAME).get_payload())
                 l_message_to_send.set_payload(l_message_to_send.get_payload_json())
             }
-            if (is_not_null(c().GC_ACCEPT)) {
-                l_message_to_send.set_header(GC_ACCEPT, c().GC_ACCEPT)
-            }
-            if (is_not_null(c().GC_ACCEPT_LANGUAGE)) {
-            l_message_to_send.set_header(GC_ACCEPT_LANGUAGE, c().GC_ACCEPT)
-            }
-            if (is_not_null(c().GC_CONNECTION)) {
-                l_message_to_send.set_header(GC_CONNECTION, c().GC_CONNECTION)
-            }
-            if (is_not_null(c().GC_CONTENT_TYPE)) {
-                l_message_to_send.set_header(GC_CONTENT_TYPE, c().GC_CONTENT_TYPE)
-            }
-            if (is_not_null(c().GC_HOST)) {
-                l_message_to_send.set_header(GC_HOST, c().GC_HOST)
-            }
-            if (is_not_null(c().GC_SOAPACTION)) {
-                l_message_to_send.set_header(GC_SOAPACTION, c().GC_SOAPACTION)
-            }
-            if (is_not_null(c().GC_USER_AGENT)) {
-                l_message_to_send.set_header(GC_USER_AGENT, c().GC_USER_AGENT)
-            }
+            l_message_to_send.set_headers()
             sql_update(PC_SQL_UPDATE_SENDING, GC_STATUS_SENDING, p_thread_number, l_message_to_send.p_tpn_internal_unique_id)
             l().log_info(s.Sending_message_Z1, l_message_to_send.get_tpn_internal_unique_id())
             l_message_to_send.set_payload_type(c().GC_PAYLOAD_TYPE)

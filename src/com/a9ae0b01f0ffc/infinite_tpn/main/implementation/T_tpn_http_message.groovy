@@ -2,8 +2,16 @@ package implementation
 
 import annotations.I_black_box
 import annotations.I_fix_variable_scopes
-import base.T_tpn_base_6_util
 import groovy.transform.ToString
+
+import static base.T_tpn_base_4_const.GC_ACCEPT
+import static base.T_tpn_base_4_const.GC_ACCEPT_LANGUAGE
+import static base.T_tpn_base_4_const.GC_CONNECTION
+import static base.T_tpn_base_4_const.GC_CONTENT_TYPE
+import static base.T_tpn_base_4_const.GC_HOST
+import static base.T_tpn_base_4_const.GC_SOAPACTION
+import static base.T_tpn_base_4_const.GC_USER_AGENT
+import static base.T_tpn_base_5_context.c
 
 @I_fix_variable_scopes
 @ToString(includeNames = true, includeFields = true, includeSuper = true)
@@ -57,10 +65,8 @@ class T_tpn_http_message extends T_http_message {
         set_retry_count(i_row.retry_count)
         set_state(i_row.status)
         set_tpn_internal_unique_id(i_row.tpn_internal_unique_id)
-        set_method(T_tpn_base_6_util.c().GC_REQUEST_METHOD)
-        set_header(PC_HEADER_NAME_USER_AGENT, T_tpn_base_6_util.c().GC_USER_AGENT)
-        set_header(PC_HEADER_NAME_ACCEPT_LANGUAGE, T_tpn_base_6_util.c().GC_ACCEPT_LANGUAGE)
-        set_header(PC_HEADER_NAME_ACCEPT_CONTENT_TYPE, T_tpn_base_6_util.c().GC_CONTENT_TYPE)
+        set_method(c().GC_REQUEST_METHOD)
+        set_headers()
     }
 
     @I_black_box("error")
@@ -137,4 +143,31 @@ class T_tpn_http_message extends T_http_message {
     void set_tpn_internal_unique_id(Integer i_tpn_internal_unique_id) {
         p_tpn_internal_unique_id = i_tpn_internal_unique_id
     }
+
+
+    @I_black_box("error")
+    void set_headers() {
+        if (is_not_null(c().GC_ACCEPT)) {
+            set_header(GC_ACCEPT, c().GC_ACCEPT)
+        }
+        if (is_not_null(c().GC_ACCEPT_LANGUAGE)) {
+            set_header(GC_ACCEPT_LANGUAGE, c().GC_ACCEPT_LANGUAGE)
+        }
+        if (is_not_null(c().GC_CONNECTION)) {
+            set_header(GC_CONNECTION, c().GC_CONNECTION)
+        }
+        if (is_not_null(c().GC_CONTENT_TYPE)) {
+            set_header(GC_CONTENT_TYPE, c().GC_CONTENT_TYPE)
+        }
+        if (is_not_null(c().GC_HOST)) {
+            set_header(GC_HOST, c().GC_HOST)
+        }
+        if (is_not_null(c().GC_SOAPACTION)) {
+            set_header(GC_SOAPACTION, c().GC_SOAPACTION)
+        }
+        if (is_not_null(c().GC_USER_AGENT)) {
+            set_header(GC_USER_AGENT, c().GC_USER_AGENT)
+        }
+    }
+
 }
