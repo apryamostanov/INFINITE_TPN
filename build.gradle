@@ -11,15 +11,15 @@ dependencies {
     compile 'org.codehaus.groovy:groovy-all:2.4.12'
     compile 'a9ae0b01f0ffc:INFINITE_TOOLS:1.0.0.BETA.009'
     compile 'a9ae0b01f0ffc:INFINITE_LOGGING:1.0.0.BETA.002'
-    compile 'a9ae0b01f0ffc:INFINITE_MIDDLEWARE:2.1.4'
+    compile 'a9ae0b01f0ffc:INFINITE_MIDDLEWARE:2.1.5'
     compile 'mysql:mysql-connector-java:5.1.44'
     testCompile 'junit:junit:4.12'
 }
 
 task fatJar(type: Jar) {
     manifest {
-        attributes 'Implementation-Title': 'TPN 1.1.6',
-                'Implementation-Version': "1.1.6",
+        attributes 'Implementation-Title': 'TPN 1.1.7',
+                'Implementation-Version': "1.1.7",
                 'Main-Class': 'base.T_main'
     }
     baseName = project.name + '-all'
@@ -32,7 +32,7 @@ uploadArchives {
         mavenLocal()
         mavenDeployer {
             repository(url: mavenLocal().url)
-            pom.version = '1.1.6'
+            pom.version = '1.1.7'
             pom.groupId = 'a9ae0b01f0ffc'
             pom.artifactId = 'TPN'
         }

@@ -48,10 +48,8 @@ class T_tpn_channel_master_thread extends Thread {
     }
 
     @I_black_box
-    static Boolean is_not_duplicate(Integer i_trxn_id, Integer i_tpn_internal_unique_id, String i_channel) {
-        final String LC_SQL_SELECT_SUCCESSFUL_WITH_SAME_TRXN_ID_AND_DIFFERENT_UNIQUE_ID = """select * from messages where endpoint="$i_channel" and txn_id=$i_trxn_id and tpn_internal_unique_id<>$i_tpn_internal_unique_id and status not in ("${
-            GC_STATUS_NEW.toUpperCase()
-        }", "$GC_STATUS_RENEWED", "$GC_STATUS_FAILED_NO_CONNECTION", "$GC_STATUS_FAILED_RESPONSE")"""
+    static Boolean is_not_duplicate(String i_source, Integer i_trxn_id, Integer i_tpn_internal_unique_id, String i_channel) {
+        final String LC_SQL_SELECT_SUCCESSFUL_WITH_SAME_TRXN_ID_AND_DIFFERENT_UNIQUE_ID = """select * from messages where source="$i_source" and endpoint="$i_channel" and txn_id=$i_trxn_id and tpn_internal_unique_id<>$i_tpn_internal_unique_id and status not in ("${GC_STATUS_NEW.toUpperCase()}", "$GC_STATUS_RENEWED", "$GC_STATUS_FAILED_NO_CONNECTION", "$GC_STATUS_FAILED_RESPONSE")"""
         Boolean l_is_not_duplicate = GC_TRUE
         each_row(LC_SQL_SELECT_SUCCESSFUL_WITH_SAME_TRXN_ID_AND_DIFFERENT_UNIQUE_ID) { l_row ->
             l().log_warning(s.Transaction_with_same_TrxnID_Z1_and_different_UniqueID_Z2_already_exists_in_status_Z3_for_new_message_with_UniqueID_Z4_for_channel_Z5, i_trxn_id, l_row.tpn_internal_unique_id, l_row.status, i_tpn_internal_unique_id, i_channel)
@@ -91,7 +89,7 @@ class T_tpn_channel_master_thread extends Thread {
             }
             each_row(l_sql_select_main_query) { l_row ->
                 l().log_receive_sql(l_row)
-                if (is_not_duplicate(Integer.parseInt(l_row.txn_id), l_row.tpn_internal_unique_id, p_channel_name)) {
+                if (is_not_duplicate(l_row.source, Integer.parseInt(l_row.txn_id), l_row.tpn_internal_unique_id, p_channel_name)) {
                     sql_update(LC_SQL_UPDATE_STATUS, GC_STATUS_WAITING_FOR_PROCESSING, l_row.tpn_internal_unique_id)
                     T_tpn_http_message l_message = new T_tpn_http_message(l_row, p_url)
                     if (GC_ZERO == Integer.parseInt(c().GC_MAX_RETRY_COUNT)) {

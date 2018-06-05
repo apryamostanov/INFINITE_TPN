@@ -1,0 +1,17 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+    <s:Body>
+        <TranHistNotification xmlns="http://tempuri.org/">
+            <TranHistNotificationRequest xmlns:a="http://schemas.datacontract.org/2004/07/WDNotifyServices.DTO">
+                <a:AvailableBalance>3896.50</a:AvailableBalance>
+                <a:CurrentBalance>3896.50</a:CurrentBalance>
+                <a:FilterResultCount>1</a:FilterResultCount>
+                <a:LastCreditAmount>12.00</a:LastCreditAmount>
+                <a:LastCreditDate>2017-03-10T00:00:00</a:LastCreditDate>
+            </a:TransactionsHistory>
+        </a:TransactionHistoryList>
+        <a:UniqueID/>
+        <a:UniqueIDflag>0</a:UniqueIDflag>
+    </TranHistNotificationRequest>
+</TranHistNotification>
+        </s:Body>
+        </s:Envelope>

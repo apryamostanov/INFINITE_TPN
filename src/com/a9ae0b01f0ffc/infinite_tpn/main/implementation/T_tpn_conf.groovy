@@ -7,6 +7,8 @@ class T_tpn_conf extends T_common_conf {
 
     /*
     TODO: Headers config, multiple channels, SMS Global fix, Duplicate OTP check (by source); use groovy scripts instead of templates; escaping; archiving
+    TODO: Check run lock (prevent more than 1 instance of TPN running)
+    TODO: Fix duplication within same Source only
      */
 
     String GC_TPN_CLASSES_CONF
