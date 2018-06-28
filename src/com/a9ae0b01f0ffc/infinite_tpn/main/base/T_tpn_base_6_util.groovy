@@ -55,6 +55,8 @@ class T_tpn_base_6_util extends T_tpn_base_5_context {
         l_tpn_standard_message_format.OTP = l_json_builder.content.OTP
         l_tpn_standard_message_format.phone = l_json_builder.content.phone
         l_tpn_standard_message_format.scope = l_json_builder.content.scope
+        l_tpn_standard_message_format.source = i_http_message.p_source
+        l_tpn_standard_message_format.accessor_name = l_json_builder.content.accessor_name
         return l_tpn_standard_message_format
     }
 

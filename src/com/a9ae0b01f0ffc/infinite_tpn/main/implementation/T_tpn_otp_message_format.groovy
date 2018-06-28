@@ -11,5 +11,7 @@ class T_tpn_otp_message_format extends T_tpn_base_6_util {
     String user = GC_EMPTY_STRING
     String password = GC_EMPTY_STRING
     String from = GC_EMPTY_STRING
+    String source = GC_EMPTY_STRING
+    String accessor_name = GC_EMPTY_STRING
 
 }

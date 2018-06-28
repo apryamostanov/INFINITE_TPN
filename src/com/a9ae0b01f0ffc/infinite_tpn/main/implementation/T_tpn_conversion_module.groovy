@@ -5,6 +5,7 @@ import annotations.I_black_box
 import annotations.I_fix_variable_scopes
 import groovy.transform.ToString
 import base.T_tpn_base_6_util
+import other.E_application_exception
 
 @I_fix_variable_scopes
 @ToString(includeNames = true, includeFields = true, includeSuper = false)
@@ -45,8 +46,45 @@ class T_tpn_conversion_module extends T_tpn_base_6_util {
                 "otp_format": l_tpn_otp_message_format
                 , "http_message": i_http_message
         ]
-
-        i_http_message.set_payload(get_template_manager().get_template(l_tpn_otp_message_format.language + GC_UNDERSCORE + i_http_message.get_channel_name()).make(l_template_variable_map).toString())
+        String l_payload = GC_EMPTY_STRING
+        String l_template_name_accessor_name_lang = l_tpn_otp_message_format.accessor_name + GC_UNDERSCORE + l_tpn_otp_message_format.language + GC_UNDERSCORE + i_http_message.get_channel_name()
+        String l_template_name_accessor_name_default = l_tpn_otp_message_format.accessor_name + GC_UNDERSCORE + i_http_message.get_channel_name()
+        String l_template_name_source_lang = l_tpn_otp_message_format.source + GC_UNDERSCORE + l_tpn_otp_message_format.language + GC_UNDERSCORE + i_http_message.get_channel_name()
+        String l_template_name_source_default = l_tpn_otp_message_format.source + GC_UNDERSCORE + i_http_message.get_channel_name()
+        String l_template_name_lang = l_tpn_otp_message_format.language + GC_UNDERSCORE + i_http_message.get_channel_name()
+        String l_template_name_default = l_tpn_otp_message_format.language + GC_UNDERSCORE + i_http_message.get_channel_name()
+        try {
+            l_payload = get_template_manager().get_template(l_template_name_accessor_name_lang).make(l_template_variable_map).toString()
+        } catch (E_application_exception ignored) {}
+        if (is_null(l_payload)) {
+            try {
+                l_payload = get_template_manager().get_template(l_template_name_accessor_name_default).make(l_template_variable_map).toString()
+            } catch (E_application_exception ignored) {}
+        }
+        if (is_null(l_payload)) {
+            try {
+                l_payload = get_template_manager().get_template(l_template_name_source_lang).make(l_template_variable_map).toString()
+            } catch (E_application_exception ignored) {}
+        }
+        if (is_null(l_payload)) {
+            try {
+                l_payload = get_template_manager().get_template(l_template_name_source_default).make(l_template_variable_map).toString()
+            } catch (E_application_exception ignored) {}
+        }
+        if (is_null(l_payload)) {
+            try {
+                l_payload = get_template_manager().get_template(l_template_name_lang).make(l_template_variable_map).toString()
+            } catch (E_application_exception ignored) {}
+        }
+        if (is_null(l_payload)) {
+            try {
+                l_payload = get_template_manager().get_template(l_template_name_default).make(l_template_variable_map).toString()
+            } catch (E_application_exception ignored) {}
+        }
+        if (is_null(l_payload)) {
+            throw new E_application_exception(s.Unable_to_find_OTP_template_for_accessor_name_Z1_source_Z2_channel_Z3_language_Z4, l_tpn_otp_message_format.accessor_name, l_tpn_otp_message_format.source, i_http_message.get_channel_name(), l_tpn_otp_message_format.language)
+        }
+        i_http_message.set_payload(l_payload)
         return i_http_message
     }
 

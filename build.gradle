@@ -18,8 +18,8 @@ dependencies {
 
 task fatJar(type: Jar) {
     manifest {
-        attributes 'Implementation-Title': 'TPN 1.1.7',
-                'Implementation-Version': "1.1.7",
+        attributes 'Implementation-Title': 'TPN 1.1.8',
+                'Implementation-Version': "1.1.8",
                 'Main-Class': 'base.T_main'
     }
     baseName = project.name + '-all'
@@ -32,7 +32,7 @@ uploadArchives {
         mavenLocal()
         mavenDeployer {
             repository(url: mavenLocal().url)
-            pom.version = '1.1.7'
+            pom.version = '1.1.8'
             pom.groupId = 'a9ae0b01f0ffc'
             pom.artifactId = 'TPN'
         }
