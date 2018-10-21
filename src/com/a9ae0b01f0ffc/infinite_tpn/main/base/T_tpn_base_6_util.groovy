@@ -64,6 +64,7 @@ class T_tpn_base_6_util extends T_tpn_base_5_context {
     static T_tpn_std_message_format parse_std_message_format(T_tpn_http_message i_http_message) {
         T_tpn_std_message_format l_tpn_standard_message_format = new T_tpn_std_message_format()
         GPathResult l_gpath_result = new XmlSlurper().parseText(i_http_message.get_payload())
+        l_tpn_standard_message_format.fiid = l_gpath_result?.Body?.TransactionNotificationRequest?.product?.institutionID?.text()
         l_tpn_standard_message_format.productID = l_gpath_result?.Body?.TransactionNotificationRequest?.product?.productID?.text()
         l_tpn_standard_message_format.productName = l_gpath_result?.Body?.TransactionNotificationRequest?.product?.productName?.text()
         l_tpn_standard_message_format.programManager = l_gpath_result?.Body?.TransactionNotificationRequest?.product?.programManager?.text()
@@ -86,6 +87,7 @@ class T_tpn_base_6_util extends T_tpn_base_5_context {
         l_tpn_standard_message_format.AccountCurrency = l_gpath_result?.Body?.TransactionNotificationRequest?.account?.AccountCurrency?.text()
         l_tpn_standard_message_format.AccountBalanceInt = l_gpath_result?.Body?.TransactionNotificationRequest?.account?.AccountBalanceInt?.text()
         l_tpn_standard_message_format.AccountBalanceDec = l_gpath_result?.Body?.TransactionNotificationRequest?.account?.AccountBalanceDec?.text()
+        l_tpn_standard_message_format.bankingCustomerId = l_gpath_result?.Body?.TransactionNotificationRequest?.card?.bankingCustomerId?.text()
         l_tpn_standard_message_format.transactionId = l_gpath_result?.Body?.TransactionNotificationRequest?.transaction?.transactionId?.text()
         l_tpn_standard_message_format.transactionCode = l_gpath_result?.Body?.TransactionNotificationRequest?.transaction?.transactionCode?.text()
         l_tpn_standard_message_format.transactionDescription = l_gpath_result?.Body?.TransactionNotificationRequest?.transaction?.transactionDescription?.text()

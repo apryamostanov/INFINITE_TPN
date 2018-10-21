@@ -9,6 +9,7 @@ class T_tpn_std_message_format extends T_tpn_base_6_util {
     String UniqueID = GC_EMPTY_STRING
     String UniqueIDFlag = GC_EMPTY_STRING
     String UniqueIDflag = GC_EMPTY_STRING
+    String fiid = GC_EMPTY_STRING
     String productID = GC_EMPTY_STRING
     String productName = GC_EMPTY_STRING
     String programManager = GC_EMPTY_STRING
@@ -31,6 +32,7 @@ class T_tpn_std_message_format extends T_tpn_base_6_util {
     String AccountCurrency = GC_EMPTY_STRING
     String AccountBalanceInt = GC_EMPTY_STRING
     String AccountBalanceDec = GC_EMPTY_STRING
+    String bankingCustomerId = GC_EMPTY_STRING
     String transactionId = GC_EMPTY_STRING
     String transactionCode = GC_EMPTY_STRING
     String transactionDescription = GC_EMPTY_STRING

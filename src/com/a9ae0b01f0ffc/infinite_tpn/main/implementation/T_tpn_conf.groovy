@@ -1,5 +1,6 @@
 package implementation
 
+import annotations.I_black_box
 import other.T_common_conf
 import static base.T_logging_base_4_const.*
 
@@ -9,7 +10,36 @@ class T_tpn_conf extends T_common_conf {
     TODO: Headers config, multiple channels, SMS Global fix, Duplicate OTP check (by source); use groovy scripts instead of templates; escaping; archiving
     TODO: Check run lock (prevent more than 1 instance of TPN running)
     TODO: Fix duplication within same Source only
+    TODO: Fix fees in templates; json fees, xml fees, array fees
+    TODO: restore WDIP template
+    TODO: remove additional data from fleet template
+    TODO: Format versioning
+    TODO: Handle:
+    exception exception_class="SQLException" datetimestamp="2018-08-26 17:59:21:803" message="Sort aborted: Server shutdown in progress" line="63">
+    <stacktrace>
+        [com.mysql.jdbc.SQLError.createSQLException(SQLError.java:964)
+                 com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3973)
+                 com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3909)
+                 com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:873)
+                 com.mysql.jdbc.MysqlIO.nextRow(MysqlIO.java:1996)
+                 com.mysql.jdbc.MysqlIO.readSingleRowSet(MysqlIO.java:3400)
+                 com.mysql.jdbc.MysqlIO.getResultSet(MysqlIO.java:470)
+                 com.mysql.jdbc.MysqlIO.readResultsForQueryOrUpdate(MysqlIO.java:3112)
+                 com.mysql.jdbc.MysqlIO.readAllResults(MysqlIO.java:2341)
+                 com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2736)
+                 com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2483)
+                 com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2441)
+                 com.mysql.jdbc.StatementImpl.executeQuery(StatementImpl.java:1381)
+                 base.T_tpn_base_6_util.each_row(T_tpn_base_6_util.groovy:311)
+                 base.T_tpn_base_6_util$each_row$1.callStatic(Unknown Source)
+                 implementation.T_tpn_channel_master_thread.run_with_logging(T_tpn_channel_master_thread.groovy:90)
+                 implementation.T_tpn_channel_master_thread.run(T_tpn_channel_master_thread.groovy:123)]
+    </stacktrace>
+</exception>
+
      */
+
+
 
     String GC_TPN_CLASSES_CONF
     String GC_BLACK_BOX_CONFIG
@@ -87,4 +117,5 @@ class T_tpn_conf extends T_common_conf {
         GC_OTP_TEMPLATES_PATH = nvl_empty_map(get_conf().otp_templates_path, GC_OTP_TEMPLATES_PATH)
         GC_OTP_DEFAULT_LANGUAGE = nvl_empty_map(get_conf().otp_default_language, GC_OTP_DEFAULT_LANGUAGE)
     }
+
 }
